@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,13 +10,20 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getPage(page int) (io.Reader, error) {
+// Info about House advert
+type House struct {
+	brandLink      string
+	price          string
+	date           string
+	newDevelopment bool
+}
+
+func getPage(page int) (*goquery.Document, error) {
 	nbed := "4"
 	url := ""
 	if page == 0 {
 		url = fmt.Sprintf("https://www.daft.ie/wexford/property-for-sale/wexford-town/?s%%5Bmnb%%5D=%s&s%%5Badvanced%%5D=1&s%%5Bsort_by%%5D=date&s%%5Bsort_type%%5D=d&searchSource=sale", nbed)
 	} else {
-		page := page * 20
 		url = fmt.Sprintf("https://www.daft.ie/wexford/property-for-sale/wexford-town/?s%%5Bmnb%%5D=%s&s%%5Badvanced%%5D=1&s%%5Bsort_by%%5D=date&s%%5Bsort_type%%5D=d&searchSource=sale&offset=%s",
 			nbed, strconv.FormatInt(int64(page), 10))
 	}
@@ -33,31 +39,16 @@ func getPage(page int) (io.Reader, error) {
 		log.Fatalf("status code error: %d %s", resp.StatusCode, resp.Status)
 	}
 
-	return resp.Body, nil
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return doc, nil
 
 }
 
-func main() {
-	data, err := getPage(0)
-
-	doc, err := goquery.NewDocumentFromReader(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	doc.Find(".PropertyCardContainer__container").Each(func(i int, s *goquery.Selection) {
-		brandlink, ok := s.Find(".brandLink").Attr("href")
-		if ok {
-			fmt.Println(brandlink)
-		}
-		price := s.Find(".PropertyInformationCommonStyles__costAmountCopy").Text()
-		date := s.Find(".PropertyInformationCommonStyles__startDate").Text()
-		if s.Find(".PropertyInformationCommonStyles__newDevelopmentLabel").Size() > 0 {
-			fmt.Println("New Development")
-		} else {
-			fmt.Printf("Price: %s - Date: %s\n", price, date)
-		}
-	})
+func getNumPages(doc *goquery.Document) int {
 	var pages []int
 	doc.Find(".paging.clear").Each(func(i int, s *goquery.Selection) {
 		s.Find("li").Each(func(i int, p *goquery.Selection) {
@@ -71,7 +62,66 @@ func main() {
 		})
 	})
 
+	return len(pages)
+
+}
+
+func getAdverts(doc *goquery.Document) ([]House, error) {
+	var houses []House
+	doc.Find(".PropertyCardContainer__container").Each(func(i int, s *goquery.Selection) {
+		var house House
+		brandlink, ok := s.Find(".brandLink").Attr("href")
+		if ok {
+			fmt.Println(brandlink)
+		}
+		price := s.Find(".PropertyInformationCommonStyles__costAmountCopy").Text()
+		house.price = price
+		date := s.Find(".PropertyInformationCommonStyles__startDate").Text()
+		house.date = date
+		if s.Find(".PropertyInformationCommonStyles__newDevelopmentLabel").Size() > 0 {
+			house.newDevelopment = true
+		} else {
+			house.newDevelopment = false
+		}
+		houses = append(houses, house)
+	})
+
+	return houses, nil
+}
+
+func main() {
+
+	doc, err := getPage(0)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get number of pages for that search
+	// should we include all the results? or just 4 bed?
+	pages := getNumPages(doc)
+	// Iterate for each page
+	next := 0
+	for i := 1; i < pages; i++ {
+		p, err := getPage(next)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		houses, err := getAdverts(p)
+		if err != nil {
+			log.Fatal(err)
+		}
+		print(houses)
+		next += 20
+	}
+	// Check if that result is already in
+
+	// If so, check new price and date
+
+	// If it's not in, add it
+
+	// repeat every hour
+
 	// Getting rest of the pages
-	fmt.Println(pages)
 
 }
