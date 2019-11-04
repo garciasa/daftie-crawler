@@ -22,7 +22,6 @@ func getPage(page int) (io.Reader, error) {
 			nbed, strconv.FormatInt(int64(page), 10))
 	}
 
-	fmt.Println(url)
 	resp, err := http.Get(url)
 
 	if err != nil {
@@ -39,7 +38,7 @@ func getPage(page int) (io.Reader, error) {
 }
 
 func main() {
-	data, err := getPage(1)
+	data, err := getPage(0)
 
 	doc, err := goquery.NewDocumentFromReader(data)
 	if err != nil {
