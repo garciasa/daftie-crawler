@@ -191,7 +191,7 @@ func main() {
 	}
 
 	// Get number of pages for that search
-	// should we include all the results? or just 4 bed?
+	// should we include all the results? or just 4 beds?
 	pages := getNumPages(doc)
 
 	// Iterate for each page
@@ -211,10 +211,6 @@ func main() {
 	}
 
 	for _, h := range allHouses {
-		// Check if that result is already in
-		// If so, check new price and date
-
-		// If it's not in, add it
 		getHouseDetails(&h)
 		err := h.save(db)
 		if err != nil {
