@@ -1,24 +1,27 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/boltdb/bolt"
 )
 
 // House Info about House advert
 type House struct {
-	brandLink      string
-	price          string
-	date           string
-	newDevelopment bool
-	meters         string
-	eircode        string
+	BrandLink      string `json:"brandlink"`
+	Price          string `json:"price"`
+	Date           string `json:"date"`
+	NewDevelopment bool   `json:"newdevelopment"`
+	Meters         string `json:"meters"`
+	Eircode        string `json:"eircode"`
 }
 
 // DOMAIN main domain to use
@@ -55,7 +58,7 @@ func getPage(page int) (*goquery.Document, error) {
 }
 
 func getHouseDetails(house *House) {
-	brandLink := house.brandLink
+	brandLink := house.BrandLink
 	url := fmt.Sprintf("%s%s", DOMAIN, brandLink)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -75,9 +78,9 @@ func getHouseDetails(house *House) {
 	validMeters := regexp.MustCompile(`[0-9].+ m2`)
 	meters := validMeters.FindString(details)
 	if validMeters.MatchString(details) {
-		house.meters = meters
+		house.Meters = meters
 	} else {
-		house.meters = "N/A"
+		house.Meters = "N/A"
 	}
 }
 
@@ -105,22 +108,22 @@ func getAdverts(doc *goquery.Document) ([]House, error) {
 		var house House
 		brandlink, ok := s.Find(".brandLink").Attr("href")
 		if ok {
-			house.brandLink = brandlink
+			house.BrandLink = brandlink
 		} else {
 			//find another way to get link
 			link, ok := s.Find(".PropertyImage__link").Attr("href")
 			if ok {
-				house.brandLink = link
+				house.BrandLink = link
 			}
 		}
 		price := s.Find(".PropertyInformationCommonStyles__costAmountCopy").Text()
-		house.price = price
+		house.Price = price
 		date := s.Find(".PropertyInformationCommonStyles__startDate").Text()
-		house.date = date
+		house.Date = date
 		if s.Find(".PropertyInformationCommonStyles__newDevelopmentLabel").Size() > 0 {
-			house.newDevelopment = true
+			house.NewDevelopment = true
 		} else {
-			house.newDevelopment = false
+			house.NewDevelopment = false
 		}
 		houses = append(houses, house)
 	})
@@ -129,15 +132,59 @@ func getAdverts(doc *goquery.Document) ([]House, error) {
 }
 
 func printHouse(house House) {
-	if house.newDevelopment {
-		fmt.Printf("%s - New Development\n", house.brandLink)
+	if house.NewDevelopment {
+		fmt.Printf("%s - New Development\n", house.BrandLink)
 	} else {
-		fmt.Printf("%s - %s - %s - %s\n", house.brandLink, house.date, house.price, house.meters)
+		fmt.Printf("%s - %s - %s - %s\n", house.BrandLink, house.Date, house.Price, house.Meters)
 	}
+}
+
+func (h *House) save(db *bolt.DB) error {
+	err := db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte("houses"))
+		if err != nil {
+			return err
+		}
+
+		// Check if exits
+		v := b.Get([]byte(h.BrandLink))
+		if len(v) != 0 {
+			item := House{}
+			_ = json.Unmarshal(v, &item)
+			if h.Price == item.Price {
+				return nil
+			}
+			//Update price
+			item.Price = h.Price
+			encoded, err := json.Marshal(item)
+			if err != nil {
+				return err
+			}
+			return b.Put([]byte(h.BrandLink), encoded)
+
+		}
+
+		encoded, err := json.Marshal(h)
+		if err != nil {
+			return err
+		}
+
+		return b.Put([]byte(h.BrandLink), encoded)
+
+	})
+	return err
 }
 
 func main() {
 	var allHouses []House
+	db, err := bolt.Open("houses.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
 	doc, err := getPage(0)
 	if err != nil {
 		log.Fatal(err)
@@ -169,6 +216,10 @@ func main() {
 
 		// If it's not in, add it
 		getHouseDetails(&h)
+		err := h.save(db)
+		if err != nil {
+			log.Fatal(err)
+		}
 		printHouse(h)
 	}
 	fmt.Println(len(allHouses))
