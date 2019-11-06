@@ -4,4 +4,5 @@ Real State crawler plus API
 - [ ] Unit Test
 - [ ] Daemon/cmd tool
 - [ ] Rest API
+- [ ] Replace Boltdb by https://go.etcd.io/bbolt it seems more updated
 
