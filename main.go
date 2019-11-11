@@ -54,7 +54,6 @@ func getPage(page int) (*goquery.Document, error) {
 	}
 
 	return doc, nil
-
 }
 
 func getHouseDetails(house *House) {
@@ -152,6 +151,7 @@ func (h *House) save(db *bolt.DB) error {
 			item := House{}
 			_ = json.Unmarshal(v, &item)
 			if h.Price == item.Price {
+				// If exists but price is the same then do nothing
 				return nil
 			}
 			//Update price
@@ -175,19 +175,12 @@ func (h *House) save(db *bolt.DB) error {
 	return err
 }
 
-func main() {
-	var allHouses []House
-	db, err := bolt.Open("houses.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer db.Close()
-
+func parse(db *bolt.DB) ([]House, error) {
+	var all []House
 	doc, err := getPage(0)
+
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Get number of pages for that search
@@ -199,25 +192,43 @@ func main() {
 	for i := 0; i < pages; i++ {
 		p, err := getPage(next)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		houses, err := getAdverts(p)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
-		allHouses = append(allHouses, houses...)
+		all = append(all, houses...)
 		next += 20
 	}
 
-	for _, h := range allHouses {
+	for _, h := range all {
 		getHouseDetails(&h)
 		err := h.save(db)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		printHouse(h)
 	}
+
+	return all, nil
+}
+
+func main() {
+	db, err := bolt.Open("houses.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
+	allHouses, err := parse(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Println(len(allHouses))
 	// repeat every hour
 
