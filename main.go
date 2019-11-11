@@ -14,6 +14,12 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+// App bla bla
+type App struct {
+	databaseName string
+	db           *bolt.DB
+}
+
 // House Info about House advert
 type House struct {
 	BrandLink      string `json:"brandlink"`
@@ -26,6 +32,55 @@ type House struct {
 
 // DOMAIN main domain to use
 const DOMAIN = "https://www.daft.ie"
+
+func (app *App) connect() {
+	db, err := bolt.Open(app.databaseName, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.db = db
+
+}
+
+func (app *App) parse() ([]House, error) {
+	var all []House
+	doc, err := getPage(0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Get number of pages for that search
+	// should we include all the results? or just 4 beds?
+	pages := getNumPages(doc)
+
+	// Iterate for each page
+	next := 0
+	for i := 0; i < pages; i++ {
+		p, err := getPage(next)
+		if err != nil {
+			return nil, err
+		}
+
+		houses, err := getAdverts(p)
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, houses...)
+		next += 20
+	}
+
+	for _, h := range all {
+		getHouseDetails(&h)
+		err := h.save(app.db)
+		if err != nil {
+			return nil, err
+		}
+		printHouse(h)
+	}
+
+	return all, nil
+}
 
 func getPage(page int) (*goquery.Document, error) {
 	nbed := "4"
@@ -98,7 +153,6 @@ func getNumPages(doc *goquery.Document) int {
 	})
 
 	return len(pages)
-
 }
 
 func getAdverts(doc *goquery.Document) ([]House, error) {
@@ -175,56 +229,16 @@ func (h *House) save(db *bolt.DB) error {
 	return err
 }
 
-func parse(db *bolt.DB) ([]House, error) {
-	var all []House
-	doc, err := getPage(0)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// Get number of pages for that search
-	// should we include all the results? or just 4 beds?
-	pages := getNumPages(doc)
-
-	// Iterate for each page
-	next := 0
-	for i := 0; i < pages; i++ {
-		p, err := getPage(next)
-		if err != nil {
-			return nil, err
-		}
-
-		houses, err := getAdverts(p)
-		if err != nil {
-			return nil, err
-		}
-		all = append(all, houses...)
-		next += 20
-	}
-
-	for _, h := range all {
-		getHouseDetails(&h)
-		err := h.save(db)
-		if err != nil {
-			return nil, err
-		}
-		printHouse(h)
-	}
-
-	return all, nil
-}
-
 func main() {
-	db, err := bolt.Open("houses.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
-
-	if err != nil {
-		log.Fatal(err)
+	app := &App{
+		databaseName: "houses.db",
 	}
 
-	defer db.Close()
+	app.connect()
 
-	allHouses, err := parse(db)
+	defer app.db.Close()
+
+	allHouses, err := app.parse()
 	if err != nil {
 		log.Fatal(err)
 	}
