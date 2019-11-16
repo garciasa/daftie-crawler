@@ -12,12 +12,15 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/boltdb/bolt"
+	"github.com/gorilla/mux"
+	"github.com/robfig/cron/v3"
 )
 
 // App bla bla
 type App struct {
 	databaseName string
 	db           *bolt.DB
+	router       *mux.Router
 }
 
 // House Info about House advert
@@ -44,6 +47,7 @@ func (app *App) connect() {
 
 func (app *App) parse() ([]House, error) {
 	var all []House
+	start := time.Now()
 	doc, err := getPage(0)
 
 	if err != nil {
@@ -76,9 +80,10 @@ func (app *App) parse() ([]House, error) {
 		if err != nil {
 			return nil, err
 		}
-		printHouse(h)
+		//printHouse(h)
 	}
-
+	elapsed := time.Since(start)
+	log.Printf("Time parsing: %s", elapsed)
 	return all, nil
 }
 
@@ -229,21 +234,57 @@ func (h *House) save(db *bolt.DB) error {
 	return err
 }
 
+func (app *App) routes() {
+	app.router.HandleFunc("/api/", app.handleAPI())
+}
+
+func (app *App) handleAPI() http.HandlerFunc {
+	houses := []House{}
+
+	err := app.db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("houses"))
+		b.ForEach(func(k, v []byte) error {
+			item := House{}
+			_ = json.Unmarshal(v, &item)
+			houses = append(houses, House{
+				BrandLink:      string(k),
+				Price:          item.Price,
+				Date:           item.Date,
+				NewDevelopment: item.NewDevelopment,
+				Meters:         item.Meters,
+				Eircode:        item.Eircode,
+			})
+			return nil
+		})
+
+		return nil
+	})
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err != nil {
+			fmt.Fprintf(w, "%s", err)
+		}
+		json.NewEncoder(w).Encode(houses)
+	}
+}
+
 func main() {
+
 	app := &App{
 		databaseName: "houses.db",
+		router:       mux.NewRouter(),
 	}
 
 	app.connect()
-
 	defer app.db.Close()
 
-	allHouses, err := app.parse()
-	if err != nil {
-		log.Fatal(err)
-	}
+	app.routes()
+	_, _ = app.parse()
 
-	fmt.Println(len(allHouses))
-	// repeat every hour
+	// Parsing every hour
+	c := cron.New()
+	c.AddFunc("@every 1h", func() { _, _ = app.parse() })
+	c.Start()
+	// Starting API server
+	http.ListenAndServe(":8000", app.router)
 
 }
