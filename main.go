@@ -46,8 +46,8 @@ func (app *App) connect() {
 }
 
 func (app *App) parse() ([]House, error) {
+	defer timeTrack(time.Now(), "Parsing")
 	var all []House
-	start := time.Now()
 	doc, err := getPage(0)
 
 	if err != nil {
@@ -82,8 +82,7 @@ func (app *App) parse() ([]House, error) {
 		}
 		//printHouse(h)
 	}
-	elapsed := time.Since(start)
-	log.Printf("Time parsing: %s", elapsed)
+
 	return all, nil
 }
 
@@ -265,6 +264,11 @@ func (app *App) handleAPI() http.HandlerFunc {
 		}
 		json.NewEncoder(w).Encode(houses)
 	}
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
 }
 
 func main() {
