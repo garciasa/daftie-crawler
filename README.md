@@ -1,8 +1,17 @@
 # daftie-crawler
-Real State crawler plus API
-- [X] Persitent 
-- [ ] Unit Test
-- [ ] Improve Files structure
-- [X] Rest API
-- [X] Adding Cron
 
+Server/
+Real State crawler plus API
+
+- [x] Persitent
+- [ ] Unit Test
+- [x] Initial Files structure
+- [ ] Improve File structure
+- [x] Rest API
+- [x] Adding Cron
+
+Client
+
+- [ ] Basic struture
+- [ ] Dashboard Mockup
+- [ ] Dashbard Implementation React
