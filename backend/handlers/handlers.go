@@ -1,11 +1,9 @@
 package handlers
 
 import "github.com/go-chi/chi"
-
 import "github.com/go-chi/chi/middleware"
-
 import "time"
-
+// Server api server struct
 type Server struct {
 }
 
@@ -19,11 +17,12 @@ func setupMiddleware(r *chi.Mux) {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 }
-
+// NewServer create a new api server instance
 func NewServer() *Server {
 	return &Server{}
 }
 
+// SetupRouter set up all routes
 func SetupRouter() *chi.Mux {
 	server := NewServer()
 
