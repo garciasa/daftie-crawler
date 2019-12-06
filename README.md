@@ -6,9 +6,11 @@ Real State crawler plus API
 - [x] Persitent
 - [ ] Unit Test
 - [x] Initial Files structure
-- [ ] Improve File structure
+- [x] Improve File structure
 - [x] Rest API
 - [x] Adding Cron
+- [ ] Docker
+- [ ] Deploy
 
 Client
 
