@@ -3,7 +3,7 @@
 Server/
 Real State crawler plus API
 
-- [x] Persitent
+- [x] Persistent
 - [ ] Unit Test
 - [x] Initial Files structure
 - [x] Improve File structure
@@ -14,6 +14,6 @@ Real State crawler plus API
 
 Client
 
-- [ ] Basic struture
+- [ ] Basic structure
 - [ ] Dashboard Mockup
-- [ ] Dashbard Implementation React
+- [ ] Dashboard Implementation React
