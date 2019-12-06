@@ -2,23 +2,24 @@ package domain
 
 import (
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
-func (app *App) parse() ([]House, error) {
+const DOMAIN = "https://www.daft.ie"
+
+func(d *Domain) Parse() error{
 	defer timeTrack(time.Now(), "Parsing")
 	var all []House
 	doc, err := getPage(0)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Get number of pages for that search
@@ -30,12 +31,12 @@ func (app *App) parse() ([]House, error) {
 	for i := 0; i < pages; i++ {
 		p, err := getPage(next)
 		if err != nil {
-			return nil, err
+			return  err
 		}
 
 		houses, err := getAdverts(p)
 		if err != nil {
-			return nil, err
+			return  err
 		}
 		all = append(all, houses...)
 		next += 20
@@ -43,14 +44,13 @@ func (app *App) parse() ([]House, error) {
 
 	for _, h := range all {
 		getHouseDetails(&h)
-		err := h.save(app.db)
+		err := d.Save(&h)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		//printHouse(h)
 	}
 
-	return all, nil
+	return nil
 }
 
 func getPage(page int) (*goquery.Document, error) {
@@ -153,4 +153,9 @@ func getAdverts(doc *goquery.Document) ([]House, error) {
 	})
 
 	return houses, nil
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
 }

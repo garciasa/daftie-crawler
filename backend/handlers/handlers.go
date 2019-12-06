@@ -1,10 +1,18 @@
 package handlers
 
-import "github.com/go-chi/chi"
-import "github.com/go-chi/chi/middleware"
-import "time"
+import (
+	"backend/domain"
+	"encoding/json"
+	"net/http"
+	"time"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+)
+
 // Server api server struct
 type Server struct {
+	domain *domain.Domain
 }
 
 func setupMiddleware(r *chi.Mux) {
@@ -17,18 +25,41 @@ func setupMiddleware(r *chi.Mux) {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 }
+
 // NewServer create a new api server instance
-func NewServer() *Server {
-	return &Server{}
+func NewServer(domain *domain.Domain) *Server {
+	return &Server{domain:domain}
 }
 
 // SetupRouter set up all routes
-func SetupRouter() *chi.Mux {
-	server := NewServer()
+func SetupRouter(domain *domain.Domain) *chi.Mux {
+	server := NewServer(domain)
 
 	r := chi.NewRouter()
 
 	server.setupEndPoints(r)
 
 	return r
+}
+
+func jsonResponse(w http.ResponseWriter, data interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(statusCode)
+
+	if data == nil {
+		data = map[string]string{}
+	}
+
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	return
+}
+
+func badRequestResponse(w http.ResponseWriter, err error) {
+	response := map[string]string{"error": err.Error()}
+	jsonResponse(w, response, http.StatusBadRequest)
 }

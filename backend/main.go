@@ -1,25 +1,47 @@
 package main
 
-import "backend/boltdb"
-import "backend/handlers"
-import "os"
-import "net/http"
-import "fmt"
-import "log"
+import (
+	"backend/boltdb"
+	"backend/domain"
+	"backend/handlers"
+	"fmt"
+	"github.com/robfig/cron/v3"
+	"log"
+	"net/http"
+	"os"
+)
 
 func main() {
 	DB := boltdb.Connect("houses.db")
 
 	defer DB.Close()
 
-	r := handlers.SetupRouter()
+	domainDB := domain.DB{
+		HouseRepo: boltdb.NewHouseRepo(DB),
+	}
+
+	d:= &domain.Domain{DB:domainDB}
+
+
+	err := d.Parse()
+	if err !=nil{
+		log.Fatalf("cannot parse site %v", err)
+	}
+
+
+	r := handlers.SetupRouter(d)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	err := http.ListenAndServe(fmt.Sprintf(":%s", port), r)
+	// Parsing every hour
+	c := cron.New()
+	c.AddFunc("@every 1h", func() { _, _ = d.Parse() })
+	c.Start()
+
+	err = http.ListenAndServe(fmt.Sprintf(":%s", port), r)
 	if err != nil {
 		log.Fatalf("cannot start server %v", err)
 	}

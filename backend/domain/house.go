@@ -1,17 +1,5 @@
 package domain
 
-import (
-	"github.com/boltdb/bolt"
-	"github.com/gorilla/mux"
-)
-
-// App for crawling daftie
-type App struct {
-	databaseName string
-	db           *bolt.DB
-	router       *mux.Router
-}
-
 // House Info about House advert
 type House struct {
 	BrandLink      string `json:"brandlink"`
@@ -20,4 +8,23 @@ type House struct {
 	NewDevelopment bool   `json:"newdevelopment"`
 	Meters         string `json:"meters"`
 	Eircode        string `json:"eircode"`
+}
+
+// GetAll bla bla
+func (d *Domain) GetAll()([]House, error){
+	houses, err := d.DB.HouseRepo.GetAll()
+	if err != nil{
+		return nil, err
+	}
+	return houses, nil
+}
+
+
+// Save bla bla
+func (d *Domain) Save(house *House) error {
+	err := d.DB.HouseRepo.Save(house)
+	if err != nil {
+		return err
+	}
+	return nil
 }
