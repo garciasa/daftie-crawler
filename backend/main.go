@@ -20,14 +20,12 @@ func main() {
 		HouseRepo: boltdb.NewHouseRepo(DB),
 	}
 
-	d:= &domain.Domain{DB:domainDB}
-
+	d := &domain.Domain{DB: domainDB}
 
 	err := d.Parse()
-	if err !=nil{
+	if err != nil {
 		log.Fatalf("cannot parse site %v", err)
 	}
-
 
 	r := handlers.SetupRouter(d)
 
@@ -38,7 +36,7 @@ func main() {
 
 	// Parsing every hour
 	c := cron.New()
-	c.AddFunc("@every 1h", func() { _, _ = d.Parse() })
+	c.AddFunc("@every 1h", func() { _ = d.Parse() })
 	c.Start()
 
 	err = http.ListenAndServe(fmt.Sprintf(":%s", port), r)
