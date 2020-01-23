@@ -1,6 +1,14 @@
 package handlers
 
-import "github.com/go-chi/chi"
+import (
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/go-chi/chi"
+)
 
 func (s *Server) setupEndPoints(r *chi.Mux) {
 	r.Route("/api/v1", func(r chi.Router) {
@@ -8,9 +16,12 @@ func (s *Server) setupEndPoints(r *chi.Mux) {
 			r.Get("/", s.getAllHouses())
 		})
 	})
-	workDir, _ := os.Getwd()
-	staticDir := filepath.Join(workDir, "build")
-	FileServer(r, "/", "/static", http.Dir(staticDir))
+	r.Route("/app", func(r chi.Router) {
+		workDir, _ := os.Getwd()
+		log.Printf("directory: %s", workDir)
+		staticDir := filepath.Join(workDir, "build")
+		FileServer(r, "/app", "/static", http.Dir(staticDir))
+	})
 }
 
 // FileServer conveniently sets up a http.FileServer handler to serve
