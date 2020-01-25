@@ -36,7 +36,6 @@ export function AddedLastWeek(data: Array<House>): Array<House> {
       lastWeek.push(item);
     }
   });
-  console.log(lastWeek);
 
   return lastWeek;
 }

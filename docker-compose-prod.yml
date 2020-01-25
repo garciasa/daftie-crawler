@@ -1,0 +1,22 @@
+version: "3.2"
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app/backend
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+  frontend:
+    build: ./client
+    volumes:
+      - ./client:/app
+      # One-way volume to use node_modules from inside image
+      - /app/node_modules
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend

@@ -12,7 +12,7 @@ export default function App() {
   const [lastWeek, setLastWeek] = useState<any>([]);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8080/api/v1/houses").then(resp => {
+    axios.get("/api/v1/houses").then(resp => {
       setHouses(OrderByDate(Convert(resp.data)));
       setTotal(resp.data.length);
       setLastWeek(AddedLastWeek(resp.data));
