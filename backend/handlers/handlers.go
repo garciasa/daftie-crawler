@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 )
 
 // Server api server struct
@@ -23,12 +24,20 @@ func setupMiddleware(r *chi.Mux) {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.URLFormat)
 	r.Use(middleware.Timeout(60 * time.Second))
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	r.Use(cors.Handler)
 
 }
 
 // NewServer create a new api server instance
 func NewServer(domain *domain.Domain) *Server {
-	return &Server{domain:domain}
+	return &Server{domain: domain}
 }
 
 // SetupRouter set up all routes
@@ -36,6 +45,8 @@ func SetupRouter(domain *domain.Domain) *chi.Mux {
 	server := NewServer(domain)
 
 	r := chi.NewRouter()
+
+	setupMiddleware(r)
 
 	server.setupEndPoints(r)
 
