@@ -1,44 +1,42 @@
-import moment from 'moment';
+import moment from "moment";
 
 interface House {
-    brandlink: string;
-    price: string;
-    date: moment.Moment;
-    newdevelopment: boolean;
-    meters: string;
-    eircode: string;
+  brandlink: string;
+  price: string;
+  date: moment.Moment;
+  newdevelopment: boolean;
+  meters: string;
+  eircode: string;
 }
 
-function compareDate (a:any, b:any):number{
+function compareDate(a: any, b: any): number {
   let result = 1;
-  if (a.date > b.date){
+  if (a.date > b.date) {
     result = -1;
   }
   return result;
 }
 
-export function Convert(data:Array<any>):Array<House>{
-  data.map(item => {
-     item.date = moment(item.date, "DD/MM/YYYY");
-  });
-  
+export function Convert(data: Array<any>): Array<House> {
+  data.map(item => (item.date = moment(item.date, "DD/MM/YYYY")));
+
   return data;
 }
 
-export function OrderByDate(data:Array<House>):Array<House>{
+export function OrderByDate(data: Array<House>): Array<House> {
   data.sort(compareDate);
   return data;
 }
 
-export function AddedLastWeek(data:Array<House>):Array<House>{
-  let lastWeek:Array<House> = []; 
-  
+export function AddedLastWeek(data: Array<House>): Array<House> {
+  let lastWeek: Array<House> = [];
+
   data.forEach(item => {
-      if (item.date > moment().subtract(7, 'days') ){
-        lastWeek.push(item);
-      }
+    if (item.date > moment().subtract(7, "days")) {
+      lastWeek.push(item);
+    }
   });
-  
+  console.log(lastWeek);
+
   return lastWeek;
 }
-
