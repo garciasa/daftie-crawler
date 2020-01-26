@@ -5,7 +5,7 @@ services:
     volumes:
       - ./backend:/app/backend
     ports:
-      - "8080:8080"
+      - "5000:5000"
     stdin_open: true
     tty: true
   frontend:
