@@ -9,11 +9,11 @@ Real State crawler plus API
 - [x] Improve File structure
 - [x] Rest API
 - [x] Adding Cron
-- [ ] Docker
-- [ ] Deploy
+- [x] Docker
+- [x] Deploy
 
 Client
 
-- [ ] Basic structure
-- [ ] Dashboard Mockup
-- [ ] Dashboard Implementation React
+- [x] Basic structure
+- [x] Dashboard Mockup
+- [x] Dashboard Implementation React
