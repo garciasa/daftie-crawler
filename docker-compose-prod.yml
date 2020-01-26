@@ -1,22 +1,12 @@
 version: "3.2"
 services:
   backend:
-    build: ./backend
-    volumes:
-      - ./backend:/app/backend
+    image: "mycontainerhub.azurecr.io/daftiecrawler_backend:latest"
     ports:
-      - "8080:8080"
-    stdin_open: true
-    tty: true
+      - "5000:5000"
   frontend:
-    build: ./client
-    volumes:
-      - ./client:/app
-      # One-way volume to use node_modules from inside image
-      - /app/node_modules
+    image: "mycontainerhub.azurecr.io/daftiecrawler_frontend:latest"
     ports:
       - "80:80"
-    environment:
-      - NODE_ENV=development
     depends_on:
       - backend

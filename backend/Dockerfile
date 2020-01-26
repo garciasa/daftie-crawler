@@ -11,5 +11,5 @@ FROM alpine:latest
 #USER app
 WORKDIR /app
 COPY --from=builder /app/app .
-EXPOSE 8080
+EXPOSE 5000 
 ENTRYPOINT ["./app"]
