@@ -18,3 +18,7 @@
 #Ignoring executable
 daftie
 .idea/
+
+housecrawler/env
+.vscode
+__pycache__
