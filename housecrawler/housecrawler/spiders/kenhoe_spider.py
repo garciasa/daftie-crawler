@@ -25,6 +25,10 @@ class KenhoeSpider (Spider):
         loader = ItemLoader(item=HousecrawlerItem(), selector=response)
         loader.add_value("provider", "kehoeproperty")
         loader.add_value("url", response.url)
+        loader.add_value("eircode", response.xpath(
+            "normalize-space(//div[contains(@class,'site-content')])").re("([Yy]35\s?[A-Za-z\d]{4})"))
+        loader.add_value("title", response.css(
+            "h1.wp-property-title::text").get())
         loader.add_value("price", response.css(
             "span.wp-property-price::text").get())
         details = response.css(
@@ -32,4 +36,6 @@ class KenhoeSpider (Spider):
         for item in details:
             if "bedrooms" in item:
                 loader.add_value("beds", item.replace("bedrooms", ""))
+            if "File No." in item:
+                loader.add_value("propertyId", item.replace("File No.", ""))
         yield loader.load_item()
