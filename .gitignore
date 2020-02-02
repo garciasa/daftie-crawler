@@ -22,3 +22,4 @@ daftie
 housecrawler/env
 .vscode
 __pycache__
+housecrawler/log.txt

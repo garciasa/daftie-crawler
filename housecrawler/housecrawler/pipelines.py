@@ -20,10 +20,32 @@ class HousecrawlerPipeline(object):
         self.connection = psycopg2.connect(
             host=hostname, user=username, password=password, dbname=database)
         self.cur = self.connection.cursor()
+        self.init_stat(spider.name)
 
     def close_spider(self, spider):
+        self.close_stat(spider.name)
         self.cur.close()
         self.connection.close()
+
+    def init_stat(self, name):
+        now = datetime.now()
+        self.cur.execute(
+            "SELECT * FROM stat WHERE name = %s", (name,))
+        rows = self.cur.fetchall()
+        if len(rows) > 0:
+            self.cur.execute(
+                "UPDATE stat SET start_date = %s WHERE name=%s", (now, name,))
+        else:
+            self.cur.execute(
+                "INSERT INTO stat(start_date, name) values(%s, %s)", (now, name,))
+
+        self.connection.commit()
+
+    def close_stat(self, name):
+        now = datetime.now()
+        self.cur.execute(
+            "UPDATE stat SET end_date = %s WHERE name=%s", (now, name,))
+        self.connection.commit()
 
     def process_item(self, item, spider):
         # Check if it already exists base on eircode
