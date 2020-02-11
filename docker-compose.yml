@@ -8,13 +8,13 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=crawler_dev
+      - POSTGRES_PASSWORD=
       - POSTGRES_USER=crawler
       - POSTGRES_DB=crawler
   backend:
     build: ./backend
     environment:
-      - DB_PASS=crawler_dev
+      - DB_PASS=
       - DB_USER=crawler
       - DB_NAME=crawler
       - DB_HOST=db:5432
@@ -41,7 +41,7 @@ services:
   crawler:
     build: ./housecrawler
     environment:
-      - POSTGRES_PASSWORD=crawler_dev
+      - POSTGRES_PASSWORD=
       - POSTGRES_USER=crawler
       - POSTGRES_DB=crawler
     depends_on:
