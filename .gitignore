@@ -27,3 +27,7 @@ backend/gin-bin
 backend/.env
 data-db
 docker-compose-prod.yml
+.env
+ca/privkey.pem
+ca/server.req
+data.env

@@ -5,19 +5,16 @@ services:
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./data-db:/var/lib/postgresql/data
+      - ./ca/server.crt:/var/lib/postgresql/server.crt
+      - ./ca/server.key:/var/lib/postgresql/server.key
     ports:
       - 5432:5432
-    environment:
-      - POSTGRES_PASSWORD=
-      - POSTGRES_USER=crawler
-      - POSTGRES_DB=crawler
+    env_file:
+      - data.env
   backend:
     build: ./backend
-    environment:
-      - DB_PASS=
-      - DB_USER=crawler
-      - DB_NAME=crawler
-      - DB_HOST=db:5432
+    env_file:
+      - data.env
     volumes:
       - ./backend:/app/backend
     ports:
@@ -40,9 +37,7 @@ services:
       - backend
   crawler:
     build: ./housecrawler
-    environment:
-      - POSTGRES_PASSWORD=
-      - POSTGRES_USER=crawler
-      - POSTGRES_DB=crawler
+    env_file:
+      - data.env
     depends_on:
       - db

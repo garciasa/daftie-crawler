@@ -21,10 +21,10 @@ func main() {
 		fmt.Print("Error loading .env file")
 	}
 
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASS")
-	dbName := os.Getenv("DB_NAME")
-	dbHost := os.Getenv(("DB_HOST"))
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPass := os.Getenv("POSTGRES_PASS")
+	dbName := os.Getenv("POSTGRES_NAME")
+	dbHost := os.Getenv(("POSTGRES_HOST"))
 
 	DB := postgres.New(&pg.Options{
 		Addr:      dbHost,
