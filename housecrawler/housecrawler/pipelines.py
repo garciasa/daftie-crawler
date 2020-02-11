@@ -9,14 +9,15 @@ import psycopg2
 from datetime import datetime
 import uuid
 import re
+import os
 
 
 class HousecrawlerPipeline(object):
     def open_spider(self, spider):
-        hostname = 'localhost'
-        username = 'postgres'
-        password = ''  # your password
-        database = 'postgres'
+        hostname = os.getenv("DB_HOST")
+        username = os.getenv("DB_USER")
+        password = os.getenv("DB_PASS")
+        database = os.getenv("DB_NAME")
         self.connection = psycopg2.connect(
             host=hostname, user=username, password=password, dbname=database)
         self.cur = self.connection.cursor()
@@ -34,7 +35,7 @@ class HousecrawlerPipeline(object):
         rows = self.cur.fetchall()
         if len(rows) > 0:
             self.cur.execute(
-                "UPDATE stat SET start_date = %s WHERE name=%s", (now, name,))
+                "UPDATE stat SET start_date = %s, end_date = NULL WHERE name=%s", (now, name,))
         else:
             self.cur.execute(
                 "INSERT INTO stat(start_date, name) values(%s, %s)", (now, name,))
@@ -124,8 +125,12 @@ class HousecrawlerPipeline(object):
         if ("price" in item):
             price = item["price"]
 
+        propertyId = ""
+        if ("propertyId" in item):
+            propertyId = item["propertyId"]
+
         self.cur.execute(
             "insert into house(id, url, price, title, beds, baths, provider, eircode, date_renewed, first_listed, propertyid) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (id, item["url"], price, item["title"], beds, baths, item["provider"], eircode, dater, datefl, item["propertyId"],))
+            (id, item["url"], price, item["title"], beds, baths, item["provider"], eircode, dater, datefl, propertyId,))
 
         self.connection.commit()

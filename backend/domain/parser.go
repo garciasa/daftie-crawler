@@ -2,18 +2,18 @@ package domain
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 const DOMAIN = "https://www.daft.ie"
 
-func(d *Domain) Parse() error{
+func (d *Domain) Parse() error {
 	defer timeTrack(time.Now(), "Parsing")
 	var all []House
 	doc, err := getPage(0)
@@ -31,12 +31,12 @@ func(d *Domain) Parse() error{
 	for i := 0; i < pages; i++ {
 		p, err := getPage(next)
 		if err != nil {
-			return  err
+			return err
 		}
 
 		houses, err := getAdverts(p)
 		if err != nil {
-			return  err
+			return err
 		}
 		all = append(all, houses...)
 		next += 20
@@ -44,7 +44,7 @@ func(d *Domain) Parse() error{
 
 	for _, h := range all {
 		getHouseDetails(&h)
-		err := d.Save(&h)
+		// err := d.Save(&h)
 		if err != nil {
 			return err
 		}
@@ -83,30 +83,32 @@ func getPage(page int) (*goquery.Document, error) {
 }
 
 func getHouseDetails(house *House) {
-	brandLink := house.BrandLink
-	url := fmt.Sprintf("%s%s", DOMAIN, brandLink)
-	resp, err := http.Get(url)
-	if err != nil {
-		defer resp.Body.Close()
-		log.Fatal(err)
-	}
+	/*
+		brandLink := house.BrandLink
+		url := fmt.Sprintf("%s%s", DOMAIN, brandLink)
+		resp, err := http.Get(url)
+		if err != nil {
+			defer resp.Body.Close()
+			log.Fatal(err)
+		}
 
-	if resp.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", resp.StatusCode, resp.Status)
-	}
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
+		if resp.StatusCode != 200 {
+			log.Fatalf("status code error: %d %s", resp.StatusCode, resp.Status)
+		}
+		doc, err := goquery.NewDocumentFromReader(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	details := doc.Find(".PropertyOverview__propertyOverviewDetails").Text()
-	validMeters := regexp.MustCompile(`[0-9].+ m2`)
-	meters := validMeters.FindString(details)
-	if validMeters.MatchString(details) {
-		house.Meters = meters
-	} else {
-		house.Meters = "N/A"
-	}
+		details := doc.Find(".PropertyOverview__propertyOverviewDetails").Text()
+		validMeters := regexp.MustCompile(`[0-9].+ m2`)
+		meters := validMeters.FindString(details)
+		if validMeters.MatchString(details) {
+			house.Meters = meters
+		} else {
+			house.Meters = "N/A"
+		}
+	*/
 }
 
 func getNumPages(doc *goquery.Document) int {
@@ -128,30 +130,31 @@ func getNumPages(doc *goquery.Document) int {
 
 func getAdverts(doc *goquery.Document) ([]House, error) {
 	var houses []House
-	doc.Find(".PropertyCardContainer__container").Each(func(i int, s *goquery.Selection) {
-		var house House
-		brandlink, ok := s.Find(".brandLink").Attr("href")
-		if ok {
-			house.BrandLink = brandlink
-		} else {
-			//find another way to get link
-			link, ok := s.Find(".PropertyImage__link").Attr("href")
+	/*
+		doc.Find(".PropertyCardContainer__container").Each(func(i int, s *goquery.Selection) {
+			var house House
+			brandlink, ok := s.Find(".brandLink").Attr("href")
 			if ok {
-				house.BrandLink = link
+				house.BrandLink = brandlink
+			} else {
+				//find another way to get link
+				link, ok := s.Find(".PropertyImage__link").Attr("href")
+				if ok {
+					house.BrandLink = link
+				}
 			}
-		}
-		price := s.Find(".PropertyInformationCommonStyles__costAmountCopy").Text()
-		house.Price = price
-		date := s.Find(".PropertyInformationCommonStyles__startDate").Text()
-		house.Date = date
-		if s.Find(".PropertyInformationCommonStyles__newDevelopmentLabel").Size() > 0 {
-			house.NewDevelopment = true
-		} else {
-			house.NewDevelopment = false
-		}
-		houses = append(houses, house)
-	})
-
+			price := s.Find(".PropertyInformationCommonStyles__costAmountCopy").Text()
+			house.Price = price
+			date := s.Find(".PropertyInformationCommonStyles__startDate").Text()
+			house.Date = date
+			if s.Find(".PropertyInformationCommonStyles__newDevelopmentLabel").Size() > 0 {
+				house.NewDevelopment = true
+			} else {
+				house.NewDevelopment = false
+			}
+			houses = append(houses, house)
+		})
+	*/
 	return houses, nil
 }
 

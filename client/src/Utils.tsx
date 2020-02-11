@@ -39,3 +39,11 @@ export function AddedLastWeek(data: Array<House>): Array<House> {
 
   return lastWeek;
 }
+
+export function ConvertFromStr(date: string): string {
+  return moment(date).format("DD/MM/YYYY");
+}
+
+export function GetTime(date: string): string {
+  return moment(date).format("HH:mm");
+}

@@ -1,22 +1,48 @@
 version: "3.2"
 services:
+  db:
+    image: postgres
+    volumes:
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=crawler_dev
+      - POSTGRES_USER=crawler
+      - POSTGRES_DB=crawler
   backend:
     build: ./backend
+    environment:
+      - DB_PASS=crawler_dev
+      - DB_USER=crawler
+      - DB_NAME=crawler
+      - DB_HOST=db:5432
     volumes:
       - ./backend:/app/backend
     ports:
       - "5000:5000"
     stdin_open: true
     tty: true
+    depends_on:
+      - db
   frontend:
     build: ./client
     volumes:
       - ./client:/app
-      # One-way volume to use node_modules from inside image
+      #One-way volume to use node_modules from inside image
       - /app/node_modules
     ports:
       - "80:80"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     depends_on:
       - backend
+  crawler:
+    build: ./housecrawler
+    environment:
+      - POSTGRES_PASSWORD=crawler_dev
+      - POSTGRES_USER=crawler
+      - POSTGRES_DB=crawler
+    depends_on:
+      - db

@@ -1,0 +1,19 @@
+FROM python:3
+
+WORKDIR /usr/src/app
+
+COPY requirements.txt ./
+
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN apt-get update \
+    && apt-get install -y cron 
+
+COPY . .
+
+RUN touch /var/log/cron.log
+
+RUN chmod u+x /usr/src/app/entry.sh /usr/src/app/run.sh
+
+
+ENTRYPOINT ["./entry.sh"] 

@@ -23,3 +23,7 @@ housecrawler/env
 .vscode
 __pycache__
 housecrawler/log.txt
+backend/gin-bin
+backend/.env
+data-db
+docker-compose-prod.yml

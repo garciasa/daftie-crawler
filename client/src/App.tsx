@@ -3,30 +3,39 @@ import axios from "axios";
 import Header from "./Header";
 import Details from "./Details";
 import Figures from "./Figures";
-import { Convert, OrderByDate, AddedLastWeek } from "./Utils";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [houses, setHouses] = useState<any>([]);
   const [total, setTotal] = useState(0);
   const [lastWeek, setLastWeek] = useState<any>([]);
+  const [stat, setStat] = useState<any>([]);
 
   useEffect(() => {
     axios.get("/api/v1/houses").then(resp => {
-      setHouses(OrderByDate(Convert(resp.data)));
+      console.log(resp);
+      setHouses(resp.data);
       setTotal(resp.data.length);
-      setLastWeek(AddedLastWeek(resp.data));
       setIsLoading(false);
+    });
+    axios.get("/api/v1/houses/last").then(resp => {
+      setLastWeek(resp.data);
+    });
+
+    axios.get("/api/v1/stats").then(resp => {
+      setStat(resp.data);
     });
   }, []);
 
-  //const data = OrderByDate(Convert(fakeData));
-  //const total = data.length;
-  //const lastWeek = AddedLastWeek(data);
   return (
     <div className="bg-houseBlue-dark w-full">
       <Header />
-      <Figures isLoading={isLoading} total={total} lastWeek={lastWeek} />
+      <Figures
+        isLoading={isLoading}
+        total={total}
+        lastWeek={lastWeek}
+        stat={stat}
+      />
       <Details data={houses} lastWeek={lastWeek} />
     </div>
   );

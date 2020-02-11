@@ -16,7 +16,7 @@ class KeaneSpider(Spider):
                     link.css(".ribbon-inside.Sold").get() is None):
                 # house
                 ref = link.css("h4>a::attr(href)").get()
-                yield Request(ref, callback=self.parse_link)
+                yield Request(ref, callback=self.parse_link, priority=1)
 
         for next_page in response.css('.pagination>li>a'):
             yield response.follow(next_page, self.parse)

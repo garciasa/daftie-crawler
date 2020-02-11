@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
 import logging
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
@@ -9,7 +12,7 @@ from housecrawler.spiders.keane_spider import KeaneSpider
 
 configure_logging(install_root_handler=False)
 logging.basicConfig(
-    filename='log.txt',
+    filename='crawlerlogs/log.txt',
     format='%(levelname)s: %(message)s',
     level=logging.INFO,
     filemode='w'

@@ -15,7 +15,7 @@ class DaftieSpider(Spider):
             # check is sold let or sale agreed
             link = house.css(
                 "a.PropertyInformationCommonStyles__addressCopy--link::attr(href)").get()
-            yield Request(self.base_url + link, callback=self.parse_link)
+            yield Request(self.base_url + link, callback=self.parse_link, priority=1)
 
         next_page = response.css('li.next_page a::attr(href)').get()
         if next_page is not None:

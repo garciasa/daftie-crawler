@@ -1,26 +1,54 @@
 package domain
 
+import "time"
+
+import "github.com/google/uuid"
+
 // House Info about House advert
 type House struct {
-	BrandLink      string `json:"brandlink"`
-	Price          string `json:"price"`
-	Date           string `json:"date"`
-	NewDevelopment bool   `json:"newdevelopment"`
-	Meters         string `json:"meters"`
-	Eircode        string `json:"eircode"`
+	tableName   struct{}  `sql:"house"`
+	ID          uuid.UUID `json:"id"`
+	URL         string    `json:"url"`
+	Price       string    `json:"price"`
+	Title       string    `json:"title"`
+	Beds        int       `json:"beds"`
+	Baths       int       `json:"baths"`
+	Provider    string    `json:"provider"`
+	Eircode     string    `json:"eircode"`
+	DateRenewed time.Time `json:"date_renewed"`
+	FirstListed time.Time `json:"first_listed"`
+	Propertyid  string    `json:"property_id"`
 }
 
-// GetAll bla bla
-func (d *Domain) GetAll()([]House, error){
-	houses, err := d.DB.HouseRepo.GetAll()
-	if err != nil{
+// GetAllHouses bla bla
+func (d *Domain) GetAllHouses() ([]House, error) {
+	houses, err := d.DB.HouseRepo.GetAllHouses()
+	if err != nil {
 		return nil, err
 	}
 	return houses, nil
 }
 
+// GetHousesByProvider bla bla
+func (d *Domain) GetHousesByProvider(provider string) ([]House, error) {
+	houses, err := d.DB.HouseRepo.GetHousesByProvider(provider)
+	if err != nil {
+		return nil, err
+	}
+	return houses, nil
+}
+
+// GetLastHouses bla bla
+func (d *Domain) GetLastHouses() ([]House, error) {
+	houses, err := d.DB.HouseRepo.GetLastHouses()
+	if err != nil {
+		return nil, err
+	}
+	return houses, nil
+}
 
 // Save bla bla
+/*
 func (d *Domain) Save(house *House) error {
 	err := d.DB.HouseRepo.Save(house)
 	if err != nil {
@@ -28,3 +56,4 @@ func (d *Domain) Save(house *House) error {
 	}
 	return nil
 }
+*/

@@ -8,13 +8,14 @@ from scrapy.loader import ItemLoader
 class MyHomeSpider(Spider):
     name = "myhome"
     start_urls = [
-        "https://www.myhome.ie/residential/wexford/property-for-sale-in-wexford2",
+        "https://www.myhome.ie/recent/wexford/wexford2",
     ]
     base_url = "https://www.myhome.ie"
     nextPages = []
     first = True
 
     def parse(self, response):
+
         if self.first:
             # Try to generate pages to visit because they dont adding reference to pagination
             count = response.css("li.small-screen::text").get()
@@ -22,15 +23,15 @@ class MyHomeSpider(Spider):
 
             for i in range(2, pages+1):
                 url = (
-                    "https://www.myhome.ie/residential/wexford/property-for-sale-in-wexford2?page=%s" % (i,))
+                    "https://www.myhome.ie/recent/wexford/wexford2?page=%s" % (i,))
                 self.nextPages.append(url)
 
             self.first = False
 
-        for house in response.css("div.PropertyListingCard"):
+        for house in response.css("div.RecentlyAdded__Property"):
             link = house.css(
-                "a.PropertyListingCard__Address::attr(href)").get()
-            yield Request(self.base_url + link, callback=self.parse_link)
+                "a.RecentlyAddedPropertyCard__Address::attr(href)").get()
+            yield Request(self.base_url + link, callback=self.parse_link, priority=1)
 
         for page in self.nextPages:
             yield Request(page, self.parse)

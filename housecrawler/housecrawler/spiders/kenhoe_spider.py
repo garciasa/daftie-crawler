@@ -14,7 +14,7 @@ class KenhoeSpider (Spider):
         for house in response.css("article.property_cat-residential"):
             if house.xpath("//div[contains(@class,'wp-property-status')]/span/text()") not in["Let", "Sold", "Reserved", "Sale Agreed"]:
                 link = house.css("div.wp-property-thumb a::attr(href)").get()
-                yield Request(link, callback=self.parse_link)
+                yield Request(link, callback=self.parse_link, priority=1)
 
         next_page = response.css('ul.page-numbers a.next::attr(href)').get()
         if next_page is not None:
