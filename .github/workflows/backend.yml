@@ -2,10 +2,20 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "backend/**"
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Build Backend container
-        run: cd backend && docker build -t mycontainerhub.azurecr.io/daftiecrawler_backend:latest .
+      - uses: azure/docker-login@v1
+      with:
+        login-server: mycontainerhub.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - run: |
+          cd backend
+          docker build . -t mycontainerhub.azurecr.io/daftiecrawler_backend:latest
+          docker push mycontainerhub.azurecr.io/daftiecrawler_backend:latest
