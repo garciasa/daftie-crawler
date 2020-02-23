@@ -3,7 +3,7 @@ on:
     branches:
       - master
     paths:
-      - "backend/**"
+      - "client/**"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,6 +15,6 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          cd backend
-          docker build . -t mycontainerhub.azurecr.io/daftiecrawler_backend:latest
-          docker push mycontainerhub.azurecr.io/daftiecrawler_backend:latest
+          cd client 
+          docker build . -t mycontainerhub.azurecr.io/daftiecrawler_frontend:latest
+          docker push mycontainerhub.azurecr.io/daftiecrawler_frontend:latest
