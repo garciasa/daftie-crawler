@@ -9,4 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: Build Backend container
         run: cd backend && docker build -t mycontainerhub.azurecr.io/daftiecrawler_backend:latest .
