@@ -22,7 +22,7 @@ func main() {
 	}
 
 	dbUser := os.Getenv("POSTGRES_USER")
-	dbPass := os.Getenv("POSTGRES_PASS")
+	dbPass := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_NAME")
 	dbHost := os.Getenv(("POSTGRES_HOST"))
 

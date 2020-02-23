@@ -31,3 +31,5 @@ docker-compose-prod.yml
 ca/privkey.pem
 ca/server.req
 data.env
+postgres/ca/privkey.pem
+postgres/ca/server.req
