@@ -14,7 +14,8 @@ jobs:
           login-server: mycontainerhub.azurecr.io
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+      - name: Building and pushing Frontend container
+        run: |
           cd client 
           docker build . -t mycontainerhub.azurecr.io/daftiecrawler_frontend:latest
           docker push mycontainerhub.azurecr.io/daftiecrawler_frontend:latest
