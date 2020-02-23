@@ -2,8 +2,7 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "backend/**"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
