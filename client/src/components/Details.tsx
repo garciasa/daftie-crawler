@@ -1,5 +1,5 @@
 import React from "react";
-import { ConvertFromStr } from "./Utils";
+import { ConvertFromStr } from "../utils/dateUtils";
 
 interface Props {
   data: Array<any>;

@@ -1,5 +1,5 @@
 import React from "react";
-import { GetTime, ConvertFromStr } from "./Utils";
+import { GetTime, ConvertFromStr } from "../utils/dateUtils";
 
 interface Props {
   total: number;
