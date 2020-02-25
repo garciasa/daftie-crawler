@@ -16,6 +16,7 @@ func (h *HouseRepo) GetAllHouses() ([]domain.House, error) {
 	houses := make([]domain.House, 0)
 	err := h.DB.Model(&houses).
 		Where("date_renewed is not null").
+		Where("date_renewed <= current_date - interval '7 days'").
 		Order("date_renewed DESC").
 		Select()
 	if err != nil {
