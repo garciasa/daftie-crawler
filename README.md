@@ -1,5 +1,5 @@
-![.github/workflows/Backend](https://github.com/garciasa/daftie-crawler/workflows/.github/workflows/backend.yml/badge.svg)
-![.github/workflows/Frontend](https://github.com/garciasa/daftie-crawler/workflows/.github/workflows/frontend.yml/badge.svg)
+![.github/workflows/Backend.yml](https://github.com/garciasa/daftie-crawler/workflows/.github/workflows/backend.yml/badge.svg)
+![.github/workflows/Frontend.yml](https://github.com/garciasa/daftie-crawler/workflows/.github/workflows/frontend.yml/badge.svg)
 # daftie-crawler
 
 Server/
