@@ -1,3 +1,5 @@
+![.github/workflows/backend.yml](https://github.com/garciasa/daftie-crawler/workflows/.github/workflows/backend.yml/badge.svg)
+
 # daftie-crawler
 
 Server/
