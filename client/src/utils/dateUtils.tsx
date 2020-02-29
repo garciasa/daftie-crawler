@@ -41,7 +41,8 @@ export function AddedLastWeek(data: Array<House>): Array<House> {
 }
 
 export function ConvertFromStr(date: string): string {
-  return moment(date).format("DD/MM/YYYY");
+  const cDate = moment(date).format("DD/MM/YYYY");
+  return cDate === "31/12/0000" ? "--" : cDate;
 }
 
 export function GetTime(date: string): string {

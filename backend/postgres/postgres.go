@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/go-pg/pg/v9"
+	// pq driver is loaded in this way
 	_ "github.com/lib/pq"
 )
 
