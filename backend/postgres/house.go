@@ -22,6 +22,17 @@ func (h *HouseRepo) GetAllHouses() ([]domain.House, error) {
 	if err != nil {
 		return nil, err
 	}
+	housesNotDate := make([]domain.House, 0)
+	err = h.DB.Model(&housesNotDate).
+		Where("date_renewed is null").
+		Where("provider='myhome.ie'").
+		Order("propertyid DESC").
+		Select()
+	if err != nil {
+		return nil, err
+	}
+
+	houses = append(houses, housesNotDate...)
 
 	return houses, nil
 }
