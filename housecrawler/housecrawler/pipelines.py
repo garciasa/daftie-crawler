@@ -102,6 +102,8 @@ class HousecrawlerPipeline(object):
             except:
                 # for myhome date comes in this format
                 dater = datetime.strptime(item["date_renewed"], "%b %d, %Y")
+        else:
+            dater = datetime.now()
 
         if ("first_listed" in item):
             datefl = datetime.strptime(item["first_listed"], "%b %d, %Y")
