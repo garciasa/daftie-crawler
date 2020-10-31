@@ -44,4 +44,6 @@ class DaftieSpider(Spider):
             "div.PropertyStatistics__iconData::text").get())
         loader.add_value("first_listed", response.css(
             "div.PropertyPriceHistory__propertyPriceDate::text").get())
+        loader.add_value("photo", response.css(
+            "div#pbxl_carousel ul li img::attr(src)").getall()[0])
         return loader.load_item()

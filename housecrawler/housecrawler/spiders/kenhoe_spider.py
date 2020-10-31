@@ -21,7 +21,6 @@ class KenhoeSpider (Spider):
             yield Request(next_page, self.parse)
 
     def parse_link(self, response):
-
         loader = ItemLoader(item=HousecrawlerItem(), selector=response)
         loader.add_value("provider", "kehoeproperty")
         loader.add_value("url", response.url)
@@ -38,4 +37,7 @@ class KenhoeSpider (Spider):
                 loader.add_value("beds", item.replace("bedrooms", ""))
             if "File No." in item:
                 loader.add_value("propertyId", item.replace("File No.", ""))
+        loader.add_value("photo", response.xpath(
+            "//ul[@id='wp-property-gallery']/li/img/@src").extract()[0])
+
         yield loader.load_item()

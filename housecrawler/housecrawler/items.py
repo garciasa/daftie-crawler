@@ -43,3 +43,4 @@ class HousecrawlerItem(Item):
         str.strip, clean_date), output_processor=TakeFirst())
     first_listed = Field(input_processor=MapCompose(
         str.strip, clean_date), output_processor=TakeFirst())
+    photo = Field(output_processor=TakeFirst())

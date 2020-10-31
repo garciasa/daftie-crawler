@@ -100,8 +100,8 @@ class HousecrawlerPipeline(object):
                 dater = datetime.strptime(
                     item["date_renewed"], "%d.%m.%Y")
             except:
-                # for myhome date comes in this format
-                dater = datetime.strptime(item["date_renewed"], "%b %d, %Y")
+                # for myhome date comes in a proper format
+                dater = item["date_renewed"]
         else:
             dater = datetime.now()
 
@@ -132,7 +132,7 @@ class HousecrawlerPipeline(object):
             propertyId = item["propertyId"]
 
         self.cur.execute(
-            "insert into house(id, url, price, title, beds, baths, provider, eircode, date_renewed, first_listed, propertyid) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (id, item["url"], price, item["title"], beds, baths, item["provider"], eircode, dater, datefl, propertyId,))
+            "insert into house(id, url, price, title, beds, baths, provider, eircode, date_renewed, first_listed, propertyid, photo) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (id, item["url"], price, item["title"], beds, baths, item["provider"], eircode, dater, datefl, propertyId, item['photo']))
 
         self.connection.commit()
