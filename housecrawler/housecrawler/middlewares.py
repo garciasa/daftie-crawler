@@ -35,7 +35,7 @@ class PuppeteerMiddleware:
     async def _from_crawler(cls, crawler):
         middleware = cls()
 
-        middleware.browser = await launch()
+        middleware.browser = await launch(headless=True)
         crawler.signals.connect(
             middleware.spider_closed, signals.spider_closed)
 

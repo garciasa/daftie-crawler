@@ -1,3 +1,7 @@
+
+import asyncio
+from pyppeteer import launch
+
 import psycopg2
 import uuid
 from datetime import datetime
@@ -54,8 +58,18 @@ def myquery(conn):
         print(row[1])
 
 
-conn = psycopg2.connect(host=hostname, user=username,
-                        password=password, dbname=database)
+# conn = psycopg2.connect(host=hostname, user=username,
+#                        password=password, dbname=database)
 # queryQuotes(conn)
-myquery(conn)
-conn.close()
+# myquery(conn)
+# conn.close()
+async def main():
+    browser = await launch()
+    page = await browser.newPage()
+    await page.goto('https://www.myhome.ie/recent/wexford/wexford2')
+    # await page.screenshot({'path': 'example.png'})
+    body = await page.content()
+    print(body)
+    await browser.close()
+
+asyncio.get_event_loop().run_until_complete(main())

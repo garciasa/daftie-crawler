@@ -1,8 +1,10 @@
 package domain
 
-import "time"
+import (
+	"time"
 
-import "github.com/google/uuid"
+	"github.com/google/uuid"
+)
 
 // House Info about House advert
 type House struct {
@@ -18,6 +20,7 @@ type House struct {
 	DateRenewed time.Time `json:"date_renewed"`
 	FirstListed time.Time `json:"first_listed"`
 	Propertyid  string    `json:"property_id"`
+	Photo       string    `json:"photo"`
 }
 
 // GetAllHouses bla bla

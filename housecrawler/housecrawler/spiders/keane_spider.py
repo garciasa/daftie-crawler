@@ -25,8 +25,10 @@ class KeaneSpider(Spider):
         loader = ItemLoader(item=HousecrawlerItem(), selector=response)
         loader.add_value("provider", "keaneauctioneers")
         loader.add_value("url", response.url)
-        loader.add_value("title", response.xpath(
-            "/html/body/div[3]/div[1]/div[5]/div/div[2]/h1/text()").extract())
+        loader.add_value("photo", response.css(
+            "div#property_slider_carousel div.item img::attr(src)").get())
+        loader.add_value("title", response.css(
+            ".entry-title.entry-prop::text").get())
 
         eircode = response.xpath(
             "//div[contains(@class, 'wpestate_property_description')]//strong/following-sibling::text()").get()
