@@ -22,6 +22,7 @@ func (s *Server) getAllHouses() http.HandlerFunc {
 		}
 		if err != nil {
 			badRequestResponse(w, err)
+			return
 		}
 
 		jsonResponse(w, houses, http.StatusOK)
@@ -33,6 +34,7 @@ func (s *Server) getLastHouses() http.HandlerFunc {
 		houses, err := s.domain.GetLastHouses()
 		if err != nil {
 			badRequestResponse(w, err)
+			return
 		}
 
 		jsonResponse(w, houses, http.StatusOK)
