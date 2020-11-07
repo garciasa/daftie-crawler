@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Details from "../components/Details";
 import Figures from "../components/Figures";
-import { getAllHouses, getLastHouses, getStats } from "../api/crawlerApi";
+import {
+  getAllHouses,
+  getLastHouses,
+  getStats,
+  Statistics,
+} from "../api/crawlerApi";
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);

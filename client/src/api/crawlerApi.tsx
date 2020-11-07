@@ -20,6 +20,11 @@ export interface Stat {
   end_date: Date;
 }
 
+export interface Statistics {
+  crawler: Stat[];
+  general: Record<string, any>;
+}
+
 export async function getAllHouses(): Promise<House[]> {
   try {
     const housesResponse = await axios.get<House[]>("/api/v1/houses");
@@ -38,9 +43,9 @@ export async function getLastHouses(): Promise<House[]> {
   }
 }
 
-export async function getStats(): Promise<Stat[]> {
+export async function getStats(): Promise<Statistics> {
   try {
-    const statsResponse = await axios.get<Stat[]>("/api/v1/stats");
+    const statsResponse = await axios.get<Statistics>("/api/v1/stats");
     return statsResponse.data;
   } catch (err) {
     throw err;
