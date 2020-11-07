@@ -4,12 +4,15 @@ package domain
 type HouseRepo interface {
 	GetAllHouses() ([]House, error)
 	GetHousesByProvider(string) ([]House, error)
+	GetHousesPerPage(int)([]House, error)
 	GetLastHouses() ([]House, error)
+	GetTotalHouses() (int, error)
 }
 
 // StatRepo bla bla
 type StatRepo interface {
 	GetStats() ([]Stat, error)
+	GetStatsForCharts(string, int)([]Chart, error)
 }
 
 // DB database struct
