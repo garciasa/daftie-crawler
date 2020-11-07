@@ -12,6 +12,7 @@ func (s *Server) setupEndPoints(r *chi.Mux) {
 		})
 		r.Route("/stats", func(r chi.Router) {
 			r.Get("/", s.getStats())
+			r.Get("/chart", s.getStatsForCharts())
 		})
 
 	})

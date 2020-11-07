@@ -11,6 +11,7 @@ require (
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/cors v1.0.0
 	github.com/go-pg/pg/v9 v9.1.2
+	github.com/go-pg/urlstruct v0.2.8
 	github.com/google/uuid v1.1.1
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.3.0

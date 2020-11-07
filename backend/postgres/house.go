@@ -24,7 +24,7 @@ func (h *HouseRepo) GetAllHouses() ([]domain.House, error) {
 	}
 	housesNotDate := make([]domain.House, 0)
 	err = h.DB.Model(&housesNotDate).
-		Where("date_renewed is null").
+		Where("date_renewed is null"). 
 		Where("provider='myhome.ie'").
 		Order("propertyid DESC").
 		Select()
@@ -59,6 +59,35 @@ func (h *HouseRepo) GetLastHouses() ([]domain.House, error) {
 		Where("date_renewed > current_date - interval '7 days'").
 		Order("date_renewed DESC").
 		Select()
+	if err != nil {
+		return nil, err
+	}
+
+	return houses, nil
+}
+
+// GetTotalHouses Total parsed
+func (h *HouseRepo) GetTotalHouses() (int, error){
+	total, err := h.DB.Model(&domain.House{}).Count()
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
+// GetHousesPerPage Houses per page
+func (h *HouseRepo) GetHousesPerPage(page int)([]domain.House, error){
+	filter := new(domain.HouseFilter)
+
+	houses := make([]domain.House, 0)
+	err := h.DB.Model(&houses).
+		WhereStruct(filter).
+		Limit(10).
+		Offset(page).
+		Order("date_renewed DESC").
+		Select()
+		 
 	if err != nil {
 		return nil, err
 	}

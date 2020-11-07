@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/domain"
 	"net/http"
+	"strconv"
 )
 
 func (s *Server) getAllHouses() http.HandlerFunc {
@@ -10,11 +11,14 @@ func (s *Server) getAllHouses() http.HandlerFunc {
 		var houses []domain.House
 		var err error
 
-		provider := r.URL.Query().Get("provider")
-		if provider == "" {
+		// provider := r.URL.Query().Get("provider")
+		pag, err := strconv.Atoi(r.URL.Query().Get("pag"))
+		
+		if err != nil {
 			houses, err = s.domain.GetAllHouses()
 		} else {
-			houses, err = s.domain.GetHousesByProvider(provider)
+			// houses, err = s.domain.GetHousesByProvider(provider)
+			houses, err = s.domain.GetHousesPerPage(pag)
 		}
 		if err != nil {
 			badRequestResponse(w, err)

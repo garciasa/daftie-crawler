@@ -19,9 +19,8 @@ export default function App() {
         const lastHouses = await getLastHouses();
         setLastWeek(lastHouses);
         const stats = await getStats();
-        setStat(stats);
-        const total = houses.length + lastHouses.length;
-        setTotal(total);
+        setStat(stats.crawler);
+        setTotal(stats.general.total);
         setIsLoading(false);
       } catch (err) {
         //TODO: put error in some place

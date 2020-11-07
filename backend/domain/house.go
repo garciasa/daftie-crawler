@@ -3,6 +3,7 @@ package domain
 import (
 	"time"
 
+	"github.com/go-pg/urlstruct"
 	"github.com/google/uuid"
 )
 
@@ -23,6 +24,14 @@ type House struct {
 	Photo       string    `json:"photo"`
 }
 
+// HouseFilter to use on pagination
+type HouseFilter struct {
+	tableName struct{} `urlstruct:"house"`
+
+	urlstruct.Pager
+	id uuid.UUID 
+}
+
 // GetAllHouses bla bla
 func (d *Domain) GetAllHouses() ([]House, error) {
 	houses, err := d.DB.HouseRepo.GetAllHouses()
@@ -41,6 +50,16 @@ func (d *Domain) GetHousesByProvider(provider string) ([]House, error) {
 	return houses, nil
 }
 
+
+// GetHousesPerPage return houses per page
+func (d *Domain) GetHousesPerPage(page int) ([]House, error){
+	houses, err := d.DB.HouseRepo.GetHousesPerPage(page)
+	if err != nil {
+		return nil, err
+	}
+	return houses, nil
+} 
+
 // GetLastHouses bla bla
 func (d *Domain) GetLastHouses() ([]House, error) {
 	houses, err := d.DB.HouseRepo.GetLastHouses()
@@ -48,6 +67,16 @@ func (d *Domain) GetLastHouses() ([]House, error) {
 		return nil, err
 	}
 	return houses, nil
+}
+
+// GetTotalHouses get total of parsed houses
+func (d *Domain) GetTotalHouses() (int, error){
+	total, err := d.DB.HouseRepo.GetTotalHouses()
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
 
 // Save bla bla
